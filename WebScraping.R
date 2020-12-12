@@ -354,7 +354,10 @@ head(other_fights,4)
 
 other_fights <- subset(other_fights, select = -c(X,fight_extract.Round,fight_extract.Time))
 
-####### JOIN FILES ######
+
+# Joins -------------------------------------------------------------------
+
+
 
 fights_table <- read.csv("other_fights_Part1_Clean.csv")
 
@@ -364,6 +367,29 @@ fights_table$round_time <- other_fights$Time
 head(fights_table,30)
 
 
+rm(list=ls())
 
+main_fights <- read.csv("main_fights_clean.csv")
+other_fights <- read.csv("other_fights.csv")  
+event_table <- read.csv("event_table_clean.csv")
+
+view(fights_table)
+view(main_fights)
+
+main_fights <- main_fights %>% rename(fight_winner  = R_fighter,
+                                      fight_looser = B_fighter)
+
+main_fights <- subset(main_fights, select = -c(R_result,B_result,X))
+event_table <- subset(event_table, select = -X)
+
+fight_table <- union(main_fights,other_fights)
+
+write.csv(fight_table,"fight_table.csv")
+
+UFC_DataSet <- merge(event_table,fight_table, by = "event_id")
+
+head(UFC_DataSet,10)
+
+write.csv(UFC_DataSet, "UFC_Data.csv")
 
 
